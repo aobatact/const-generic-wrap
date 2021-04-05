@@ -1,6 +1,8 @@
 //! Simple wrapper for const generics.
 
 #![no_std]
+#![cfg_attr(feature = "unstable", feature(const_evaluatable_checked))]
+#![cfg_attr(feature = "unstable", feature(const_generics))]
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
 pub struct WrapUsize<const T: usize>;
@@ -101,7 +103,9 @@ mod typenum_bridge {
 
             impl typenum::marker_traits::Zero for $t<0>{}
 
-            //impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBool<{T != 0}> : {}
+            #[cfg(feature="unstable")]
+            impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBool<{T != 0}> : typenum::type_operators::Same<WrapBool<true>>  {}
+
         };
         [$(($tb: ty, $t : tt)),*$(,)*] => {
             $(
@@ -135,7 +139,9 @@ mod typenum_bridge {
             }
 
             impl typenum::marker_traits::Zero for $t<0>{}
-            //impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBool<{T != 0}> : {}
+
+            #[cfg(feature="unstable")]
+            impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBool<{T != 0}> : typenum::type_operators::Same<WrapBool<true>>  {}
         };
         [$(($tb: ty, $t : tt)),*$(,)*] => {
             $(
