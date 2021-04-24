@@ -4,32 +4,14 @@
 #![cfg_attr(feature = "unstable", feature(const_evaluatable_checked))]
 #![cfg_attr(feature = "unstable", feature(const_generics))]
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapUsize<const T: usize>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapU8<const T: u8>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapU16<const T: u16>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapU32<const T: u32>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapU64<const T: u64>;
+/*
+pub trait MayBeWrapped {
+    type Output;
+    fn get(self) -> Self::Output;
+}
+*/
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapIsize<const T: isize>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapI8<const T: i8>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapI16<const T: i16>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapI32<const T: i32>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapI64<const T: i64>;
-
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapBool<const T: bool>;
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct WrapChar<const T: char>;
+include!(concat!(env!("OUT_DIR"), "/wrappers.rs"));
 
 /*
 pub mod ops{
@@ -46,11 +28,11 @@ pub mod ops{
 mod typenum_bridge {
     use crate::*;
 
-    impl typenum::marker_traits::Bit for WrapBool<false> {
+    impl typenum::marker_traits::Bit for WrapBOOL<false> {
         const U8: u8 = 0;
         const BOOL: bool = false;
         fn new() -> Self {
-            WrapBool
+            WrapBOOL
         }
         fn to_u8() -> u8 {
             0
@@ -60,11 +42,11 @@ mod typenum_bridge {
         }
     }
 
-    impl typenum::marker_traits::Bit for WrapBool<true> {
+    impl typenum::marker_traits::Bit for WrapBOOL<true> {
         const U8: u8 = 1;
         const BOOL: bool = true;
         fn new() -> Self {
-            WrapBool
+            WrapBOOL
         }
         fn to_u8() -> u8 {
             1
@@ -119,7 +101,7 @@ mod typenum_bridge {
         (u16, WrapU16),
         (u32, WrapU32),
         (u64, WrapU64),
-        (usize, WrapUsize)
+        (usize, WrapUSIZE)
     ];
 
     macro_rules! impl_signed {
@@ -155,7 +137,7 @@ mod typenum_bridge {
         (i16, WrapI16),
         (i32, WrapI32),
         (i64, WrapI64),
-        (isize, WrapIsize)
+        (isize, WrapISIZE)
     ];
 }
 
