@@ -4,14 +4,40 @@
 #![cfg_attr(feature = "unstable", feature(const_evaluatable_checked))]
 #![cfg_attr(feature = "unstable", feature(const_generics))]
 
-/*
-pub trait MayBeWrapped {
-    type Output;
-    fn get(self) -> Self::Output;
-}
-*/
+use core::cmp::Ordering;
 
-include!(concat!(env!("OUT_DIR"), "/wrappers.rs"));
+//include!(concat!(env!("OUT_DIR"), "/wrappers.rs"));
+
+macro_rules! wrap_impl {
+    ($tb: ty, $t : ident) => {
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
+pub struct $t<const T: $tb>;
+impl<const T: $tb> From<$t<T>> for $tb { fn from(_ : $t<T>) -> $tb { T }}
+impl<const T: $tb> PartialEq<$tb> for $t<T> { fn eq(&self, other: &$tb) -> bool { <$tb>::from(*self).eq(other)} }
+impl<const T: $tb> PartialOrd<$tb> for $t<T> { fn partial_cmp(&self, other: &$tb) -> Option<Ordering> { <$tb>::from(*self).partial_cmp(other)} }
+
+    };
+    [$(($tb: ty, $t : tt)),*$(,)*] => {
+        $(
+            wrap_impl!($tb, $t);
+        )*
+    };
+}
+
+wrap_impl![
+    (u8, WrapU8),
+    (u16, WrapU16),
+    (u32, WrapU32),
+    (u64, WrapU64),
+    (usize, WrapUSIZE),
+    (i8, WrapI8),
+    (i16, WrapI16),
+    (i32, WrapI32),
+    (i64, WrapI64),
+    (isize, WrapISIZE),
+    (bool, WrapBOOL),
+    (char, WrapCHAR),
+];
 
 /*
 pub mod ops{
@@ -143,8 +169,12 @@ mod typenum_bridge {
 
 #[cfg(test)]
 mod tests {
+    use crate::*;
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn wrap_unwrap() {
+        let n3 = WrapI32::<3>;
+        assert_eq!(0, core::mem::size_of_val(&n3));
+        let m: i32 = n3.into();
+        assert_eq!(3, m);
     }
 }
