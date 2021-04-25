@@ -6,16 +6,13 @@
 
 use core::cmp::Ordering;
 
-//include!(concat!(env!("OUT_DIR"), "/wrappers.rs"));
-
 macro_rules! wrap_impl {
     ($tb: ty, $t : ident) => {
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
-pub struct $t<const T: $tb>;
-impl<const T: $tb> From<$t<T>> for $tb { fn from(_ : $t<T>) -> $tb { T }}
-impl<const T: $tb> PartialEq<$tb> for $t<T> { fn eq(&self, other: &$tb) -> bool { <$tb>::from(*self).eq(other)} }
-impl<const T: $tb> PartialOrd<$tb> for $t<T> { fn partial_cmp(&self, other: &$tb) -> Option<Ordering> { <$tb>::from(*self).partial_cmp(other)} }
-
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
+        pub struct $t<const T: $tb>;
+        impl<const T: $tb> From<$t<T>> for $tb { fn from(_ : $t<T>) -> $tb { T }}
+        impl<const T: $tb> PartialEq<$tb> for $t<T> { fn eq(&self, other: &$tb) -> bool { <$tb>::from(*self).eq(other)} }
+        impl<const T: $tb> PartialOrd<$tb> for $t<T> { fn partial_cmp(&self, other: &$tb) -> Option<Ordering> { <$tb>::from(*self).partial_cmp(other)} }
     };
     [$(($tb: ty, $t : tt)),*$(,)*] => {
         $(
@@ -40,13 +37,13 @@ wrap_impl![
 ];
 
 /*
+#[cfg(feature = "unstable")]
 pub mod ops{
     use crate::*;
     use core::ops::*;
-    impl<const T1: isize, const T2: isize> Add<WrapI64<T2>> for WrapI64<T1>{
-
-        type Output = WrapI64<{T1 + T2}>;
-        fn add(self, _: Rhs) -> <Self as std::ops::Add<Rhs>>::Output { WrapI64<{T1+T2}> }
+    impl<const T1: i32, const T2: i32> Add<WrapI32<T2>> for WrapI32<T1>{
+        type Output = WrapI32<{T1+T2}>;
+        fn add(self, _: WrapI32<T2>) -> Self::Output { WrapI32::<{T1+T2}> }
     }
 }
 */
