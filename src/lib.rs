@@ -11,6 +11,7 @@ macro_rules! wrap_impl {
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
         pub struct $t<const T: $tb>;
         impl<const T: $tb> From<$t<T>> for $tb { fn from(_ : $t<T>) -> $tb { T }}
+        impl<'a, const T: $tb> From<$t<T>> for &'a $tb { fn from(_ : $t<T>) -> &'a $tb { &T }}
         impl<const T: $tb> PartialEq<$tb> for $t<T> { fn eq(&self, other: &$tb) -> bool { <$tb>::from(*self).eq(other)} }
         impl<const T: $tb> PartialOrd<$tb> for $t<T> { fn partial_cmp(&self, other: &$tb) -> Option<Ordering> { <$tb>::from(*self).partial_cmp(other)} }
     };
