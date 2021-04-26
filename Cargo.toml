@@ -3,6 +3,10 @@ name = "const-generic-wrap"
 version = "0.1.0"
 authors = ["aobatact <aobatact144@gmail.com>"]
 edition = "2018"
+license = "MIT"
+keywords = ["const-generics", "no-std"]
+description = "Simple wrapper for const generics."
+repository = "https://github.com/aobatact/const-generic-wrap"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
