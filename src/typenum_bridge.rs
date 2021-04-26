@@ -111,3 +111,17 @@ impl_signed![
     (i64, WrapI64),
     (isize, WrapISIZE)
 ];
+
+#[cfg(test)]
+mod test{
+    use crate::*;
+    use typenum::marker_traits::*;
+    #[test]
+    fn typenum_test(){
+        assert_eq!(WrapU32::<260>::U32,260);
+        assert_eq!(WrapU32::<260>::U8,4);
+        
+        assert_eq!(WrapU32::<260>::I32,260);
+        assert_eq!(WrapI32::<260>::I32,260);
+    }
+}
