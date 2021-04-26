@@ -47,11 +47,12 @@ pub trait ConstWrap:
 
 /// Trait that can be a wrapped const generic or a owned value.
 pub trait ConstOrValue<T>: Into<T> {
-    const IS_CONST: bool;
+    /// get wheter the type is const generic wrapper.
+    const IS_CONST_WRAP: bool;
 }
 
 impl<T> ConstOrValue<T> for T {
-    const IS_CONST: bool = false;
+    const IS_CONST_WRAP: bool = false;
 }
 
 macro_rules! wrap_impl {
@@ -65,7 +66,7 @@ macro_rules! wrap_impl {
             const VALUE : $tb = T;
         }
         impl<const T: $tb> ConstOrValue<$tb> for $t<T> {
-            const IS_CONST : bool = true;
+            const IS_CONST_WRAP : bool = true;
         }
         impl<const T: $tb> From<$t<T>> for $tb {
             fn from(_ : $t<T>) -> $tb { T }
