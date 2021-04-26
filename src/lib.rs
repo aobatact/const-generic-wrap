@@ -45,18 +45,13 @@ pub trait ConstWrap:
     const VALUE: Self::BaseType;
 }
 
+/// Trait that can be a wrapped const generic or a owned value.
 pub trait ConstOrValue<T>: Into<T> {
     const IS_CONST: bool;
-    fn get_val(self) -> T {
-        self.into()
-    }
 }
 
 impl<T> ConstOrValue<T> for T {
     const IS_CONST: bool = false;
-    fn get_val(self) -> T {
-        self
-    }
 }
 
 macro_rules! wrap_impl {
