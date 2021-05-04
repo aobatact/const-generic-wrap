@@ -1,4 +1,9 @@
+# const_generic_wrap
+
 Simple wrapper for const generics.
+[![Doc](https://docs.rs/const-generic-wrap/badge.svg)](https://docs.rs/const-generic-wrap)
+[![Crate](https://img.shields.io/crates/v/const-generic-wrap.svg)](https://crates.io/crates/const-generic-wrap)
+
 # Usage
 Currently 'the type of const parameters must not depend on other generic parameters' (E0770).
 ```compile_fail
