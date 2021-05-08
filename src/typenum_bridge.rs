@@ -58,7 +58,9 @@ macro_rules! impl_unsigned {
         impl typenum::marker_traits::Zero for $t<0>{}
 
         #[cfg(feature="unstable")]
-        impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBool<{T != 0}> : typenum::type_operators::Same<WrapBool<true>>  {}
+        impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBOOL<{T != 0}> : typenum::type_operators::Same<WrapBOOL<true>>  {}
+        //#[cfg(feature="unstable")]
+        //impl<const T: $tb> typenum::marker_traits::PowerOfTwo for $t<T> where $t<{T / 2}> : typenum::marker_traits::PowerOfTwo, $t<{t % 0}> : typenum::marker_traits::Zero {}
 
     };
     [$(($tb: ty, $t : tt)),*$(,)*] => {
@@ -95,7 +97,7 @@ macro_rules! impl_signed {
         impl typenum::marker_traits::Zero for $t<0>{}
 
         #[cfg(feature="unstable")]
-        impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBool<{T != 0}> : typenum::type_operators::Same<WrapBool<true>>  {}
+        impl<const T: $tb> typenum::marker_traits::NonZero for $t<T> where WrapBOOL<{T != 0}> : typenum::type_operators::Same<WrapBOOL<true>>  {}
     };
     [$(($tb: ty, $t : tt)),*$(,)*] => {
         $(
@@ -113,15 +115,15 @@ impl_signed![
 ];
 
 #[cfg(test)]
-mod test{
+mod test {
     use crate::*;
     use typenum::marker_traits::*;
     #[test]
-    fn typenum_test(){
-        assert_eq!(WrapU32::<260>::U32,260);
-        assert_eq!(WrapU32::<260>::U8,4);
-        
-        assert_eq!(WrapU32::<260>::I32,260);
-        assert_eq!(WrapI32::<260>::I32,260);
+    fn typenum_test() {
+        assert_eq!(WrapU32::<260>::U32, 260);
+        assert_eq!(WrapU32::<260>::U8, 4);
+
+        assert_eq!(WrapU32::<260>::I32, 260);
+        assert_eq!(WrapI32::<260>::I32, 260);
     }
 }

@@ -15,8 +15,8 @@
 //! assert_eq!(mem::size_of::<A::<u32, WrapU32<12>>>(), mem::size_of::<u32>());
 //!
 //! // you can selectively use const or non const
-//! struct B<N, C>(N, C) where C : ConstOrValue<N>; // or it can be C : Into<N>
-//! fn add_b<N, C>(v : B<N, C>) -> N where N : Add<Output = N>, C : ConstOrValue<N>{
+//! struct B<N, C>(N, C) where C : ConstOrValue<N>, N : Constable; // or it can be C : Into<N>
+//! fn add_b<N, C>(v : B<N, C>) -> N where N : Add<Output = N> + Constable, C : ConstOrValue<N>{
 //!     v.0 + v.1.into()
 //! }
 //! let b_non_const = B(31, 11);
@@ -29,38 +29,45 @@
 #![cfg_attr(feature = "unstable", feature(const_generics))]
 
 use core::cmp::Ordering;
-pub(crate) use seal::ConstSeal;
+pub(crate) use seal::*;
 mod seal {
     /// Seal the ConstWrap not to be implemented with outer type.
-    pub trait ConstSeal {}
+    pub trait WrapSeal {}
+    /// Seal the Constable not to be implemented with outer type.
+    pub trait ConstableSeal {}
 }
 
 /// Marker that shows it wraps const generic.
 pub trait ConstWrap:
-    Clone + Copy + Default + Eq + core::hash::Hash + PartialEq + PartialOrd + Ord + ConstSeal
+    Clone + Copy + Default + Eq + core::hash::Hash + PartialEq + PartialOrd + Ord + WrapSeal
 {
     /// Type which is wrapped.
-    type BaseType;
+    type BaseType: Constable;
     /// Value which is wrapped.
     const VALUE: Self::BaseType;
 }
 
 /// Trait that can be a wrapped const generic or a owned value.
-pub trait ConstOrValue<T>: Into<T> {
+pub trait ConstOrValue<T: Constable>: Into<T> {
     /// get wheter the type is const generic wrapper.
     const IS_CONST_WRAP: bool;
 }
 
-impl<T> ConstOrValue<T> for T {
+impl<T: Constable> ConstOrValue<T> for T {
     const IS_CONST_WRAP: bool = false;
 }
+
+/// Marker that shows it can be used in const generic.
+pub trait Constable: ConstableSeal {}
 
 macro_rules! wrap_impl {
     ($tb: ty, $t : ident) => {
         /// Const generic wrapper.
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
         pub struct $t<const T: $tb>;
-        impl<const T: $tb> ConstSeal for $t<T>{}
+        impl ConstableSeal for $tb{}
+        impl Constable for $tb {}
+        impl<const T: $tb> WrapSeal for $t<T>{}
         impl<const T: $tb> ConstWrap for $t<T> {
             type BaseType = $tb;
             const VALUE : $tb = T;
