@@ -48,12 +48,12 @@ pub trait ConstWrap:
 }
 
 /// Trait that can be a wrapped const generic or a owned value.
-pub trait ConstOrValue<T: Constable>: Into<T> {
+pub trait ConstOrValue<T>: Into<T> {
     /// get wheter the type is const generic wrapper.
     const IS_CONST_WRAP: bool;
 }
 
-impl<T: Constable> ConstOrValue<T> for T {
+impl<T> ConstOrValue<T> for T {
     const IS_CONST_WRAP: bool = false;
 }
 
