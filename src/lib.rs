@@ -60,6 +60,16 @@ impl<T: Constable> ConstOrValue<T> for T {
 /// Marker that shows it can be used in const generic.
 pub trait Constable: ConstableSeal {}
 
+/// A lists of types for a specified values.
+pub trait ConstIntTypes: Constable {
+    type Zero: ConstWrap;
+    type One: ConstWrap;
+}
+
+/// Failed to convert to const wrap type. 
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, PartialOrd, Ord)]
+pub struct MismatchConstError;
+
 macro_rules! wrap_impl {
     ($tb: ty, $t : ident) => {
         /// Const generic wrapper.
@@ -80,6 +90,16 @@ macro_rules! wrap_impl {
         }
         impl<'a, const T: $tb> From<$t<T>> for &'a $tb {
             fn from(_ : $t<T>) -> &'a $tb { &T }
+        }
+        impl<const T: $tb> core::convert::TryFrom<$tb> for $t<T> {
+            type Error = MismatchConstError;
+            fn try_from(value : $tb) -> Result<$t<T>, MismatchConstError> {
+                if value == T {
+                    Ok($t)
+                }else{
+                    Err(MismatchConstError)
+                }
+            }
         }
         impl<const T: $tb> PartialEq<$tb> for $t<T> {
             fn eq(&self, other: &$tb) -> bool { T.eq(other)}
@@ -108,6 +128,33 @@ wrap_impl![
     (isize, WrapISIZE),
     (bool, WrapBOOL),
     (char, WrapCHAR),
+];
+
+macro_rules! wrap_impl_ints {
+    ($tb: ty, $t : ident) => {
+        impl ConstIntTypes for $tb{
+            type Zero = $t<0>;
+            type One = $t<1>;
+        }
+    };
+    [$(($tb: ty, $t : tt)),*$(,)*] => {
+        $(
+            wrap_impl_ints!($tb, $t);
+        )*
+    };
+}
+
+wrap_impl_ints![
+    (u8, WrapU8),
+    (u16, WrapU16),
+    (u32, WrapU32),
+    (u64, WrapU64),
+    (usize, WrapUSIZE),
+    (i8, WrapI8),
+    (i16, WrapI16),
+    (i32, WrapI32),
+    (i64, WrapI64),
+    (isize, WrapISIZE),
 ];
 
 #[cfg(feature = "typenum")]

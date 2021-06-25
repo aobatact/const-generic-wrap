@@ -25,3 +25,5 @@ let b_non_const = B(31, 11);
 let b_const = B(31, WrapI32::<11>);
 assert_eq!(add_b(b_non_const), add_b(b_const));
 ```
+
+This crate works with no_std.
